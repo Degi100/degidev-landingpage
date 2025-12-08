@@ -1,0 +1,145 @@
+@use 'sass:color';
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.card {
+	@include card-base;
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: $space-md;
+	padding: $space-lg;
+	color: $text-primary;
+
+	&:hover {
+		@include card-hover;
+
+		.card-actions {
+			opacity: 1;
+		}
+	}
+}
+
+.card-icon {
+	width: 48px;
+	height: 48px;
+	border-radius: 10px;
+	background: $bg-secondary;
+	@include flex-center;
+	flex-shrink: 0;
+
+	img {
+		width: 32px;
+		height: 32px;
+		object-fit: contain;
+	}
+
+	.placeholder-icon {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: $accent;
+	}
+}
+
+.card-content {
+	min-width: 0;
+	overflow: hidden;
+	flex: 1;
+
+	h2 {
+		font-size: $font-xl;
+		font-weight: 600;
+		margin-bottom: $space-xs;
+		@include text-ellipsis;
+	}
+
+	p {
+		font-size: $font-base;
+		color: $text-secondary;
+		margin: 0;
+		@include text-ellipsis;
+	}
+}
+
+.card-bottom {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: $space-sm;
+	margin-top: 0.625rem;
+}
+
+.card-actions {
+	display: flex;
+	gap: $space-xs;
+	opacity: 0;
+	transition: opacity $transition-fast;
+	flex-shrink: 0;
+
+	button {
+		@include btn-icon;
+	}
+
+	.delete-icon:hover {
+		border-color: $error;
+		color: $error;
+	}
+
+	form {
+		display: flex;
+		gap: $space-xs;
+	}
+
+	.confirm-delete {
+		@include btn-icon;
+		background: $error;
+		color: white;
+		border-color: $error;
+		font-size: $font-xs;
+
+		&:hover {
+			background: color.adjust($error, $lightness: -5%);
+		}
+	}
+
+	.cancel-delete {
+		@include btn-icon;
+		font-size: $font-xs;
+	}
+}
+
+.tech-stack-wrapper {
+	flex: 1;
+
+	.stack-toggle {
+		display: flex;
+		align-items: center;
+		gap: $space-sm;
+		padding: $space-xs $space-sm;
+		background: $bg-secondary;
+		border: 1px solid $border;
+		border-radius: $radius-sm;
+		cursor: pointer;
+		font-size: $font-sm;
+		color: $text-secondary;
+		transition: all $transition-fast;
+
+		&:hover {
+			border-color: $accent;
+			color: $text-primary;
+		}
+
+		.stack-arrow {
+			font-size: 0.6rem;
+			transition: transform $transition-fast;
+		}
+
+		&.expanded .stack-arrow {
+			transform: rotate(180deg);
+		}
+	}
+
+	.tech-stack {
+		margin-top: $space-sm;
+	}
+}

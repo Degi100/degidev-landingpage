@@ -1,0 +1,168 @@
+@use 'variables' as *;
+
+// ==============================================
+// MIXINS
+// ==============================================
+
+// Flexbox
+@mixin flex-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+@mixin flex-between {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+@mixin flex-column {
+	display: flex;
+	flex-direction: column;
+}
+
+// Buttons
+@mixin btn-base {
+	padding: $space-sm $space-md;
+	border-radius: $radius-md;
+	font-size: $font-base;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all $transition-fast;
+	border: none;
+}
+
+@mixin btn-primary {
+	@include btn-base;
+	background: $accent;
+	color: white;
+
+	&:hover {
+		filter: brightness(1.1);
+	}
+}
+
+@mixin btn-secondary {
+	@include btn-base;
+	background: transparent;
+	color: $text-secondary;
+	border: 1px solid $border;
+
+	&:hover {
+		border-color: $accent;
+		color: $text-primary;
+	}
+}
+
+@mixin btn-danger {
+	@include btn-base;
+	background: transparent;
+	color: $text-secondary;
+	border: 1px solid $border;
+
+	&:hover {
+		border-color: $error;
+		color: $error;
+	}
+}
+
+@mixin btn-icon {
+	width: 24px;
+	height: 24px;
+	@include flex-center;
+	background: $bg-secondary;
+	border: 1px solid $border;
+	border-radius: $radius-sm;
+	cursor: pointer;
+	font-size: 0.8rem;
+	color: $text-secondary;
+	transition: all $transition-fast;
+
+	&:hover {
+		border-color: $accent;
+		color: $text-primary;
+	}
+}
+
+// Inputs
+@mixin input-base {
+	padding: 0.75rem $space-md;
+	background: $bg-secondary;
+	border: 1px solid $border;
+	border-radius: $radius-lg;
+	color: $text-primary;
+	font-size: $font-md;
+	transition: all $transition-fast;
+
+	&:focus {
+		outline: none;
+		border-color: $accent;
+		box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.1);
+	}
+
+	&::placeholder {
+		color: $text-secondary;
+		opacity: 0.5;
+	}
+}
+
+// Cards
+@mixin card-base {
+	background: $bg-card;
+	border: 1px solid $border;
+	border-radius: $radius-xl;
+	transition: all $transition-normal;
+}
+
+@mixin card-hover {
+	border-color: $accent;
+	transform: translateY(-2px);
+	box-shadow: $shadow-md;
+}
+
+// Text
+@mixin text-ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@mixin gradient-text {
+	background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+// Animations
+@mixin fade-in {
+	animation: fadeIn $transition-fast;
+}
+
+@mixin slide-up {
+	animation: slideUp $transition-normal;
+}
+
+@mixin slide-down {
+	animation: slideDown $transition-fast;
+}
+
+// Responsive
+@mixin mobile {
+	@media (max-width: $breakpoint-sm) {
+		@content;
+	}
+}
+
+@mixin tablet {
+	@media (max-width: $breakpoint-md) {
+		@content;
+	}
+}
+
+@mixin desktop {
+	@media (min-width: $breakpoint-lg) {
+		@content;
+	}
+}

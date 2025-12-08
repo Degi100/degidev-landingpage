@@ -1,0 +1,42 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.container {
+	max-width: $breakpoint-xl;
+	margin: 0 auto;
+	padding: $space-xl;
+	min-height: 100vh;
+}
+
+.home-header {
+	text-align: center;
+	margin-bottom: $space-2xl;
+	padding-top: $space-3xl;
+
+	h1 {
+		font-size: $font-3xl;
+		font-weight: 700;
+		margin-bottom: $space-sm;
+		@include gradient-text;
+	}
+
+	.subtitle {
+		color: $text-secondary;
+		font-size: $font-2xl;
+		margin-bottom: $space-md;
+	}
+}
+
+.projects {
+	.empty {
+		text-align: center;
+		color: $text-secondary;
+		padding: $space-3xl;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: $space-lg;
+	}
+}

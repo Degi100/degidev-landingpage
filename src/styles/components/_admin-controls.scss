@@ -1,0 +1,33 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.admin-controls {
+	@include flex-center;
+	gap: $space-md;
+	margin-top: $space-md;
+
+	.user-badge {
+		font-size: 0.8rem;
+		color: $text-secondary;
+		padding: $space-xs 0.75rem;
+		background: $bg-secondary;
+		border-radius: $radius-full;
+	}
+
+	.add-btn {
+		@include btn-primary;
+	}
+
+	.admin-link {
+		@include btn-secondary;
+		text-decoration: none;
+	}
+
+	.logout-form {
+		display: contents;
+	}
+
+	.logout-btn {
+		@include btn-danger;
+	}
+}

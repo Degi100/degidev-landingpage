@@ -1,0 +1,204 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.modal-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(4px);
+	@include flex-center;
+	z-index: $z-modal;
+	padding: $space-md;
+	@include fade-in;
+}
+
+.modal {
+	background: $bg-card;
+	border: 1px solid $border;
+	border-radius: $radius-2xl;
+	width: 100%;
+	max-width: 550px;
+	max-height: 90vh;
+	overflow-y: auto;
+	@include slide-up;
+	box-shadow: $shadow-lg;
+}
+
+.modal-header {
+	@include flex-between;
+	padding: 1.25rem $space-lg;
+	border-bottom: 1px solid $border;
+
+	h2 {
+		font-size: $font-2xl;
+		font-weight: 600;
+		margin: 0;
+	}
+
+	.modal-close {
+		width: 32px;
+		height: 32px;
+		@include flex-center;
+		background: $bg-secondary;
+		border: 1px solid $border;
+		border-radius: $radius-lg;
+		cursor: pointer;
+		font-size: $font-2xl;
+		color: $text-secondary;
+		transition: all $transition-fast;
+
+		&:hover {
+			border-color: $accent;
+			color: $text-primary;
+		}
+	}
+}
+
+.modal-body {
+	padding: $space-lg;
+	@include flex-column;
+	gap: 1.25rem;
+}
+
+.modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.75rem;
+	padding: 1.25rem $space-lg;
+	border-top: 1px solid $border;
+	background: $bg-secondary;
+	border-radius: 0 0 $radius-2xl $radius-2xl;
+}
+
+// Form Elements inside Modal
+.form-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: $space-md;
+
+	@include mobile {
+		grid-template-columns: 1fr;
+	}
+}
+
+.form-group {
+	@include flex-column;
+	gap: $space-sm;
+
+	label {
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: $text-secondary;
+	}
+
+	input {
+		@include input-base;
+	}
+
+	.form-hint {
+		font-size: $font-sm;
+		color: $text-secondary;
+		opacity: 0.7;
+	}
+}
+
+.input-with-indicator {
+	position: relative;
+
+	input {
+		width: 100%;
+		padding-right: 2.5rem;
+	}
+
+	.input-indicator {
+		position: absolute;
+		right: 0.75rem;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 0.8rem;
+
+		&.loading {
+			color: $accent;
+			animation: pulse 1s infinite;
+		}
+	}
+}
+
+.icon-group {
+	.icon-input-row {
+		display: flex;
+		gap: 0.75rem;
+		align-items: center;
+
+		input {
+			flex: 1;
+		}
+	}
+
+	.icon-preview {
+		width: 48px;
+		height: 48px;
+		border-radius: 10px;
+		background: $bg-secondary;
+		border: 1px solid $border;
+		@include flex-center;
+		flex-shrink: 0;
+		overflow: hidden;
+
+		img {
+			width: 32px;
+			height: 32px;
+			object-fit: contain;
+		}
+
+		&.empty span {
+			font-size: $font-2xl;
+			color: $text-secondary;
+			opacity: 0.5;
+		}
+	}
+}
+
+.form-divider {
+	display: flex;
+	align-items: center;
+	gap: $space-md;
+	margin: $space-sm 0;
+
+	&::before, &::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background: $border;
+	}
+
+	span {
+		font-size: 0.8rem;
+		color: $text-secondary;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+}
+
+.stack-preview {
+	margin-top: 0.75rem;
+	padding: 0.75rem;
+	background: $bg-secondary;
+	border-radius: $radius-lg;
+	border: 1px solid $border;
+}
+
+// Buttons
+.btn-primary {
+	@include btn-primary;
+	padding: 0.75rem $space-lg;
+
+	&:hover {
+		transform: translateY(-1px);
+	}
+}
+
+.btn-secondary {
+	@include btn-secondary;
+	padding: 0.75rem $space-lg;
+}

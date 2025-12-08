@@ -1,80 +1,72 @@
+// ==============================================
+// GLOBAL STYLES
+// ==============================================
+
+@use 'variables' as *;
+@use 'animations';
+@use 'components';
+@use 'pages';
+
+// CSS Custom Properties (for runtime access)
 :root {
-	--bg-primary: #0a0a0a;
-	--bg-secondary: #141414;
-	--bg-card: #1a1a1a;
-	--text-primary: #ffffff;
-	--text-secondary: #a0a0a0;
-	--accent: #646cff;
-	--accent-hover: #747bff;
-	--border: #2a2a2a;
-	--success: #4ade80;
-	--error: #f87171;
+	--bg-primary: #{$bg-primary};
+	--bg-secondary: #{$bg-secondary};
+	--bg-card: #{$bg-card};
+	--text-primary: #{$text-primary};
+	--text-secondary: #{$text-secondary};
+	--accent: #{$accent};
+	--accent-hover: #{$accent-hover};
+	--border: #{$border};
+	--success: #{$success};
+	--error: #{$error};
 }
 
+// Reset
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 }
 
+// Base
 body {
 	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-	background-color: var(--bg-primary);
-	color: var(--text-primary);
+	background-color: $bg-primary;
+	color: $text-primary;
 	line-height: 1.6;
 	min-height: 100vh;
 }
 
+// Links
 a {
-	color: var(--accent);
+	color: $accent;
 	text-decoration: none;
-	transition: color 0.2s;
+	transition: color $transition-fast;
 
 	&:hover {
-		color: var(--accent-hover);
+		color: $accent-hover;
 	}
 }
 
+// Default button reset
 button {
 	cursor: pointer;
-	border: none;
-	padding: 0.75rem 1.5rem;
-	border-radius: 8px;
-	font-size: 1rem;
-	font-weight: 500;
-	transition: all 0.2s;
-
-	&.primary {
-		background: var(--accent);
-		color: white;
-
-		&:hover {
-			background: var(--accent-hover);
-		}
-	}
-
-	&.secondary {
-		background: var(--bg-card);
-		color: var(--text-primary);
-		border: 1px solid var(--border);
-
-		&:hover {
-			border-color: var(--accent);
-		}
-	}
+	font-family: inherit;
 }
 
+// Default input styles
 input {
-	padding: 0.75rem 1rem;
-	border-radius: 8px;
-	border: 1px solid var(--border);
-	background: var(--bg-secondary);
-	color: var(--text-primary);
-	font-size: 1rem;
+	padding: 0.75rem $space-md;
+	border-radius: $radius-lg;
+	border: 1px solid $border;
+	background: $bg-secondary;
+	color: $text-primary;
+	font-size: $font-lg;
 	width: 100%;
+	font-family: inherit;
 
 	&:focus {
 		outline: none;
-		border-color: var(--accent);
+		border-color: $accent;
 	}
 }
