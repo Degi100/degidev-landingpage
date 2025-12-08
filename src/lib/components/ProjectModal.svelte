@@ -1,17 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import TechStack from './TechStack.svelte';
-
-	interface Project {
-		_id: string;
-		name: string;
-		url: string;
-		description: string;
-		icon: string | null;
-		repoUrl: string | null;
-		stack: string[];
-		order: number;
-	}
+	import { type Project, type ProjectStatus, statusConfig } from '$lib/types';
 
 	let {
 		show = false,
@@ -32,6 +22,7 @@
 	let iconInput = $state('');
 	let repoUrlInput = $state('');
 	let stackInput = $state('');
+	let statusInput = $state<ProjectStatus>('live');
 	let loading = $state(false);
 	let loadingRepo = $state(false);
 
@@ -48,6 +39,7 @@
 				iconInput = editingProject.icon || '';
 				repoUrlInput = editingProject.repoUrl || '';
 				stackInput = editingProject.stack?.join(', ') || '';
+				statusInput = editingProject.status || 'live';
 			} else {
 				resetForm();
 			}
@@ -61,6 +53,7 @@
 		iconInput = '';
 		repoUrlInput = '';
 		stackInput = '';
+		statusInput = 'live';
 	}
 
 	function handleBackdropClick(event: MouseEvent) {
@@ -198,16 +191,26 @@
 						</div>
 					</div>
 
-					<div class="form-group">
-						<label for="modal-description">Beschreibung</label>
-						<input
-							type="text"
-							id="modal-description"
-							name="description"
-							placeholder="Kurze Beschreibung des Projekts"
-							bind:value={descriptionInput}
-							required
-						/>
+					<div class="form-row">
+						<div class="form-group">
+							<label for="modal-description">Beschreibung</label>
+							<input
+								type="text"
+								id="modal-description"
+								name="description"
+								placeholder="Kurze Beschreibung des Projekts"
+								bind:value={descriptionInput}
+								required
+							/>
+						</div>
+						<div class="form-group status-group">
+							<label for="modal-status">Status</label>
+							<select id="modal-status" name="status" bind:value={statusInput}>
+								{#each Object.entries(statusConfig) as [value, config]}
+									<option {value}>{config.label || 'Live'}</option>
+								{/each}
+							</select>
+						</div>
 					</div>
 
 					<div class="form-row">

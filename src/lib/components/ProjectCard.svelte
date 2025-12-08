@@ -1,17 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import TechStack from './TechStack.svelte';
-
-	interface Project {
-		_id: string;
-		name: string;
-		url: string;
-		description: string;
-		icon: string | null;
-		repoUrl: string | null;
-		stack: string[];
-		order: number;
-	}
+	import { type Project, statusConfig } from '$lib/types';
 
 	let {
 		project,
@@ -35,9 +25,13 @@
 
 	const isExpanded = $derived(expandedStack === project._id);
 	const isDeleting = $derived(deleteConfirm === project._id);
+	const status = $derived(statusConfig[project.status || 'live']);
 </script>
 
-<a href={project.url} class="card" target="_blank" rel="noopener noreferrer">
+<a href={project.url} class="card" class:card-coming-soon={project.status === 'coming_soon'} target="_blank" rel="noopener noreferrer">
+	{#if status.label}
+		<span class="status-badge {status.class}">{status.label}</span>
+	{/if}
 	<div class="card-icon">
 		{#if project.icon}
 			<img src={project.icon} alt={project.name} />

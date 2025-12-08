@@ -18,6 +18,52 @@
 			opacity: 1;
 		}
 	}
+
+	&.card-coming-soon {
+		opacity: 0.6;
+		pointer-events: none;
+
+		.card-actions {
+			pointer-events: auto;
+		}
+	}
+}
+
+// Status Badge
+.status-badge {
+	position: absolute;
+	top: $space-sm;
+	right: $space-sm;
+	padding: $space-xs $space-sm;
+	font-size: $font-xs;
+	font-weight: 600;
+	border-radius: $radius-sm;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+
+	&.status-live {
+		background: rgba($success, 0.2);
+		color: $success;
+		border: 1px solid rgba($success, 0.3);
+	}
+
+	&.status-beta {
+		background: rgba($accent, 0.2);
+		color: $accent;
+		border: 1px solid rgba($accent, 0.3);
+	}
+
+	&.status-wip {
+		background: rgba($warning, 0.2);
+		color: $warning;
+		border: 1px solid rgba($warning, 0.3);
+	}
+
+	&.status-coming-soon {
+		background: rgba($text-secondary, 0.2);
+		color: $text-secondary;
+		border: 1px solid rgba($text-secondary, 0.3);
+	}
 }
 
 .card-icon {

@@ -1,13 +1,67 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import type { PageData } from './$types';
-	import { ProjectCard, ProjectModal, AdminControls } from '$lib/components';
+	import { ProjectCard, ProjectModal, AdminControls, SortControls } from '$lib/components';
+	import { type Project, type SortOption, statusConfig } from '$lib/types';
 
 	let { data }: { data: PageData } = $props();
+
+	// Sort state with LocalStorage
+	const SORT_STORAGE_KEY = 'degidev-sort-preference';
+	const validSortOptions: SortOption[] = ['live', 'beta', 'wip', 'coming_soon', 'alpha'];
+	let currentSort = $state<SortOption>('live');
+
+	// Load from LocalStorage after mount
+	$effect(() => {
+		if (browser) {
+			const saved = localStorage.getItem(SORT_STORAGE_KEY);
+			if (saved && validSortOptions.includes(saved as SortOption)) {
+				currentSort = saved as SortOption;
+			}
+		}
+	});
+
+	function handleSortChange(sort: SortOption) {
+		currentSort = sort;
+		if (browser) {
+			localStorage.setItem(SORT_STORAGE_KEY, sort);
+		}
+	}
+
+	// Sorted projects - gewaehlter Status zuerst, dann die anderen nach Prioritaet
+	const sortedProjects = $derived.by(() => {
+		const projects = [...data.projects] as Project[];
+
+		if (currentSort === 'alpha') {
+			return projects.sort((a, b) => a.name.localeCompare(b.name, 'de'));
+		}
+
+		// Status-basierte Sortierung: gewaehlter Status zuerst
+		const priorityStatus = currentSort;
+		return projects.sort((a, b) => {
+			const statusA = a.status || 'live';
+			const statusB = b.status || 'live';
+
+			// Gewaehlter Status hat hoechste Prioritaet (kommt zuerst)
+			const isAPriority = statusA === priorityStatus;
+			const isBPriority = statusB === priorityStatus;
+
+			if (isAPriority && !isBPriority) return -1;
+			if (!isAPriority && isBPriority) return 1;
+
+			// Innerhalb gleicher Gruppe: nach normaler Status-Prioritaet
+			const priorityA = statusConfig[statusA].priority;
+			const priorityB = statusConfig[statusB].priority;
+			if (priorityA !== priorityB) return priorityA - priorityB;
+
+			return a.order - b.order;
+		});
+	});
 
 	// UI state
 	let expandedStack = $state<string | null>(null);
 	let showModal = $state(false);
-	let editingProject = $state<typeof data.projects[0] | null>(null);
+	let editingProject = $state<Project | null>(null);
 	let deleteConfirm = $state<string | null>(null);
 
 	function toggleStack(id: string, event: MouseEvent) {
@@ -21,7 +75,7 @@
 		showModal = true;
 	}
 
-	function openEditModal(project: typeof data.projects[0], event: MouseEvent) {
+	function openEditModal(project: Project, event: MouseEvent) {
 		event.preventDefault();
 		event.stopPropagation();
 		editingProject = project;
@@ -56,11 +110,14 @@
 	</header>
 
 	<section class="projects">
-		{#if data.projects.length === 0}
+		<div class="projects-header">
+			<SortControls {currentSort} onSortChange={handleSortChange} />
+		</div>
+		{#if sortedProjects.length === 0}
 			<p class="empty">Noch keine Projekte vorhanden.</p>
 		{:else}
 			<div class="grid">
-				{#each data.projects as project (project._id)}
+				{#each sortedProjects as project (project._id)}
 					<ProjectCard
 						{project}
 						isAdmin={!!data.user}
