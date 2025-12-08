@@ -4,6 +4,52 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	let showAddForm = $state(false);
+	let urlInput = $state('');
+	let nameInput = $state('');
+	let descriptionInput = $state('');
+	let iconInput = $state('');
+	let loading = $state(false);
+
+	let debounceTimer: ReturnType<typeof setTimeout>;
+
+	function handleUrlInput() {
+		clearTimeout(debounceTimer);
+		// Check if URL looks valid
+		if (urlInput.match(/^https?:\/\/.+\..+/)) {
+			debounceTimer = setTimeout(fetchMeta, 500);
+		}
+	}
+
+	async function fetchMeta() {
+		if (!urlInput || loading) return;
+		if (!urlInput.match(/^https?:\/\/.+\..+/)) return;
+
+		loading = true;
+		try {
+			const res = await fetch('/api/fetch-meta', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ url: urlInput })
+			});
+
+			if (res.ok) {
+				const meta = await res.json();
+				if (meta.title && !nameInput) nameInput = meta.title;
+				if (meta.description && !descriptionInput) descriptionInput = meta.description;
+				if (meta.icon && !iconInput) iconInput = meta.icon;
+			}
+		} catch (e) {
+			// Ignore errors, user can fill manually
+		}
+		loading = false;
+	}
+
+	function resetForm() {
+		urlInput = '';
+		nameInput = '';
+		descriptionInput = '';
+		iconInput = '';
+	}
 </script>
 
 <main class="admin-container">
@@ -31,29 +77,34 @@
 	<section class="projects-section">
 		<div class="section-header">
 			<h2>Projekte ({data.projects.length})</h2>
-			<button class="primary" onclick={() => (showAddForm = !showAddForm)}>
+			<button class="primary" onclick={() => { showAddForm = !showAddForm; if (!showAddForm) resetForm(); }}>
 				{showAddForm ? 'Abbrechen' : '+ Neues Projekt'}
 			</button>
 		</div>
 
 		{#if showAddForm}
-			<form method="POST" action="?/add" use:enhance class="add-form">
+			<form method="POST" action="?/add" use:enhance={() => { return async ({ update }) => { await update(); resetForm(); showAddForm = false; }; }} class="add-form">
 				<div class="form-grid">
 					<div class="field">
 						<label for="name">Name</label>
-						<input type="text" id="name" name="name" placeholder="Forgejo" required />
+						<input type="text" id="name" name="name" placeholder="Forgejo" bind:value={nameInput} required />
 					</div>
 					<div class="field">
 						<label for="url">URL</label>
-						<input type="url" id="url" name="url" placeholder="https://forgejo.degidev.de" required />
+						<div class="url-field">
+							<input type="url" id="url" name="url" placeholder="https://forgejo.degidev.de" bind:value={urlInput} oninput={handleUrlInput} required />
+							{#if loading}
+								<span class="loading-indicator">...</span>
+							{/if}
+						</div>
 					</div>
 					<div class="field full">
 						<label for="description">Beschreibung</label>
-						<input type="text" id="description" name="description" placeholder="Git Server" required />
+						<input type="text" id="description" name="description" placeholder="Git Server" bind:value={descriptionInput} required />
 					</div>
 					<div class="field full">
 						<label for="icon">Icon URL (optional)</label>
-						<input type="url" id="icon" name="icon" placeholder="https://..." />
+						<input type="url" id="icon" name="icon" placeholder="https://..." bind:value={iconInput} />
 					</div>
 				</div>
 				<button type="submit" class="primary">Projekt hinzufuegen</button>
@@ -183,6 +234,24 @@
 				color: var(--text-secondary);
 			}
 		}
+
+		.url-field {
+			position: relative;
+
+			.loading-indicator {
+				position: absolute;
+				right: 12px;
+				top: 50%;
+				transform: translateY(-50%);
+				color: var(--accent);
+				animation: pulse 1s infinite;
+			}
+		}
+	}
+
+	@keyframes pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.4; }
 	}
 
 	.projects-list {
