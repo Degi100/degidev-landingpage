@@ -77,5 +77,34 @@
 .projects-header {
 	display: flex;
 	justify-content: flex-end;
+	align-items: center;
+	gap: $space-sm;
 	margin-bottom: $space-lg;
+}
+
+.view-toggle {
+	display: flex;
+	align-items: center;
+	gap: $space-xs;
+	padding: $space-xs $space-sm;
+	background: $bg-secondary;
+	border: 1px solid $border;
+	border-radius: $radius-sm;
+	cursor: pointer;
+	font-size: $font-sm;
+	color: $text-secondary;
+	transition: all $transition-fast;
+
+	&:hover {
+		border-color: $accent;
+		color: $text-primary;
+	}
+
+	.view-icon {
+		font-size: 1rem;
+	}
+
+	.view-label {
+		font-size: $font-xs;
+	}
 }

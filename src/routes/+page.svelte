@@ -1,23 +1,49 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import type { PageData } from './$types';
-	import { ProjectCard, ProjectModal, AdminControls, SortControls } from '$lib/components';
+	import {
+		ProjectCard,
+		ProjectModal,
+		AdminControls,
+		SortControls,
+		CircleView
+	} from '$lib/components';
 	import { type Project, type SortOption, statusConfig } from '$lib/types';
 
 	let { data }: { data: PageData } = $props();
 
 	// Sort state with LocalStorage
 	const SORT_STORAGE_KEY = 'degidev-sort-preference';
+	const VIEW_STORAGE_KEY = 'degidev-view-preference';
 	const validSortOptions: SortOption[] = ['live', 'beta', 'wip', 'coming_soon', 'alpha'];
-	let currentSort = $state<SortOption>('live');
 
-	// Load from LocalStorage after mount
+	let currentSort = $state<SortOption>('live');
+	let viewMode = $state<'grid' | 'circle'>('grid');
+	let isMobile = $state(false);
+
+	// Load preferences and check screen size after mount
 	$effect(() => {
 		if (browser) {
-			const saved = localStorage.getItem(SORT_STORAGE_KEY);
-			if (saved && validSortOptions.includes(saved as SortOption)) {
-				currentSort = saved as SortOption;
+			// Load sort preference
+			const savedSort = localStorage.getItem(SORT_STORAGE_KEY);
+			if (savedSort && validSortOptions.includes(savedSort as SortOption)) {
+				currentSort = savedSort as SortOption;
 			}
+
+			// Load view preference
+			const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
+			if (savedView === 'grid' || savedView === 'circle') {
+				viewMode = savedView;
+			}
+
+			// Check if mobile
+			const checkMobile = () => {
+				isMobile = window.innerWidth <= 768;
+			};
+			checkMobile();
+			window.addEventListener('resize', checkMobile);
+
+			return () => window.removeEventListener('resize', checkMobile);
 		}
 	});
 
@@ -27,6 +53,16 @@
 			localStorage.setItem(SORT_STORAGE_KEY, sort);
 		}
 	}
+
+	function toggleViewMode() {
+		viewMode = viewMode === 'grid' ? 'circle' : 'grid';
+		if (browser) {
+			localStorage.setItem(VIEW_STORAGE_KEY, viewMode);
+		}
+	}
+
+	// Effective view mode (force grid on mobile)
+	const effectiveViewMode = $derived(isMobile ? 'grid' : viewMode);
 
 	// Sorted projects - gewaehlter Status zuerst, dann die anderen nach Prioritaet
 	const sortedProjects = $derived.by(() => {
@@ -100,38 +136,58 @@
 	}
 </script>
 
-<main class="container">
-	<header class="home-header">
-		<h1>DegiDev</h1>
-		<p class="subtitle">Meine Projekte & Services</p>
-		{#if data.user}
-			<AdminControls username={data.user.username} onAddProject={openAddModal} />
-		{/if}
-	</header>
+<main class="container" class:circle-mode={effectiveViewMode === 'circle'}>
+	{#if effectiveViewMode === 'circle'}
+		<!-- Circle View - ohne Header, View Toggle eingebaut -->
+		<CircleView
+			projects={sortedProjects}
+			isAdmin={!!data.user}
+			onEdit={openEditModal}
+			onDeleteConfirm={confirmDelete}
+			onToggleView={toggleViewMode}
+			onAddProject={openAddModal}
+			username={data.user?.username}
+		/>
+	{:else}
+		<!-- Grid View - normaler Header -->
+		<header class="home-header">
+			<h1>DegiDev</h1>
+			<p class="subtitle">Meine Projekte & Services</p>
+			{#if data.user}
+				<AdminControls username={data.user.username} onAddProject={openAddModal} />
+			{/if}
+		</header>
 
-	<section class="projects">
-		<div class="projects-header">
-			<SortControls {currentSort} onSortChange={handleSortChange} />
-		</div>
-		{#if sortedProjects.length === 0}
-			<p class="empty">Noch keine Projekte vorhanden.</p>
-		{:else}
-			<div class="grid">
-				{#each sortedProjects as project (project._id)}
-					<ProjectCard
-						{project}
-						isAdmin={!!data.user}
-						{expandedStack}
-						{deleteConfirm}
-						onToggleStack={toggleStack}
-						onEdit={openEditModal}
-						onDeleteConfirm={confirmDelete}
-						onDeleteCancel={cancelDelete}
-					/>
-				{/each}
+		<section class="projects">
+			<div class="projects-header">
+				{#if !isMobile}
+					<button class="view-toggle" onclick={toggleViewMode} title="Ansicht wechseln">
+						<span class="view-icon">◯</span>
+						<span class="view-label">Circle</span>
+					</button>
+				{/if}
+				<SortControls {currentSort} onSortChange={handleSortChange} />
 			</div>
-		{/if}
-	</section>
+			{#if sortedProjects.length === 0}
+				<p class="empty">Noch keine Projekte vorhanden.</p>
+			{:else}
+				<div class="grid">
+					{#each sortedProjects as project (project._id)}
+						<ProjectCard
+							{project}
+							isAdmin={!!data.user}
+							{expandedStack}
+							{deleteConfirm}
+							onToggleStack={toggleStack}
+							onEdit={openEditModal}
+							onDeleteConfirm={confirmDelete}
+							onDeleteCancel={cancelDelete}
+						/>
+					{/each}
+				</div>
+			{/if}
+		</section>
+	{/if}
 </main>
 
 {#if data.user}

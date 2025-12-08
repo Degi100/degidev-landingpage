@@ -1,0 +1,393 @@
+@use '../variables' as *;
+@use 'sass:color';
+
+.circle-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: $space-md;
+	padding: $space-md 0;
+	min-height: 100vh;
+}
+
+// Top controls bar
+.circle-controls {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	max-width: min(650px, 90vw);
+	padding: 0 $space-sm;
+}
+
+.circle-admin-top {
+	display: flex;
+	align-items: center;
+	gap: $space-sm;
+}
+
+.admin-user {
+	font-size: $font-sm;
+	color: $text-secondary;
+}
+
+.admin-add-btn {
+	padding: $space-xs $space-sm;
+	background: $accent;
+	border: none;
+	border-radius: $radius-sm;
+	color: white;
+	font-size: $font-sm;
+	cursor: pointer;
+	transition: background $transition-fast;
+
+	&:hover {
+		background: $accent-hover;
+	}
+}
+
+.admin-logout-btn {
+	padding: $space-xs $space-sm;
+	background: transparent;
+	border: 1px solid $border;
+	border-radius: $radius-sm;
+	color: $text-secondary;
+	font-size: $font-sm;
+	cursor: pointer;
+	transition: all $transition-fast;
+
+	&:hover {
+		border-color: $error;
+		color: $error;
+	}
+}
+
+.circle-wrapper {
+	position: relative;
+	width: min(650px, 90vw);
+	height: min(650px, 90vw);
+}
+
+// Center branding
+.center-brand {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: $space-xs;
+	z-index: 0;
+}
+
+.brand-logo {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, $accent 0%, color.adjust($accent, $lightness: 15%) 100%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 3rem;
+	font-weight: 800;
+	color: white;
+	box-shadow:
+		0 0 40px rgba($accent, 0.3),
+		inset 0 -3px 10px rgba(0, 0, 0, 0.2);
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.brand-name {
+	font-size: $font-lg;
+	font-weight: 700;
+	color: $text-primary;
+	margin-top: $space-sm;
+}
+
+.brand-tagline {
+	font-size: $font-xs;
+	color: $text-secondary;
+}
+
+// Individual project items
+.circle-item {
+	position: absolute;
+	transform: translate(-50%, -50%);
+	text-decoration: none;
+	z-index: 1;
+
+	// Prevent flickering during transition
+	will-change: z-index;
+
+	&:hover,
+	&.expanded {
+		z-index: 100;
+	}
+
+	&.coming-soon {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+}
+
+// The morphing card
+.item-card {
+	display: flex;
+	align-items: center;
+	gap: 0;
+	padding: $space-sm;
+	background: $bg-card;
+	border: 2px solid $border;
+	border-radius: 50%;
+	width: 70px;
+	height: 70px;
+	overflow: hidden;
+	transition:
+		width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+		height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+		border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+		border-color 0.3s ease,
+		box-shadow 0.3s ease,
+		gap 0.3s ease;
+
+	.circle-item.expanded & {
+		width: 320px;
+		height: auto;
+		min-height: 140px;
+		border-radius: $radius-lg;
+		border-color: $accent;
+		box-shadow:
+			0 10px 40px rgba(0, 0, 0, 0.3),
+			0 0 20px rgba($accent, 0.2);
+		gap: $space-md;
+		padding: $space-md;
+	}
+}
+
+// Icon wrapper
+.card-icon-wrap {
+	width: 50px;
+	height: 50px;
+	min-width: 50px;
+	border-radius: 50%;
+	background: $bg-secondary;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition:
+		width 0.3s ease,
+		height 0.3s ease,
+		border-radius 0.3s ease;
+
+	.circle-item.expanded & {
+		width: 60px;
+		height: 60px;
+		min-width: 60px;
+		border-radius: $radius-md;
+	}
+}
+
+// Scoped to circle-item to avoid conflicts
+.circle-item .card-icon {
+	width: 36px;
+	height: 36px;
+	object-fit: contain;
+	border-radius: 6px;
+	transition: all 0.3s ease;
+}
+
+.circle-item.expanded .card-icon {
+	width: 44px;
+	height: 44px;
+}
+
+.card-fallback {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: $accent;
+}
+
+// Expanded card content (scoped to circle-item to avoid conflicts with grid cards)
+.circle-item .card-content {
+	display: flex;
+	flex-direction: column;
+	gap: $space-xs;
+	opacity: 0;
+	max-width: 0;
+	overflow: hidden;
+	transition:
+		opacity 0.2s ease,
+		max-width 0.4s ease;
+}
+
+.circle-item.expanded .card-content {
+	opacity: 1;
+	max-width: 240px;
+	transition:
+		opacity 0.3s ease 0.15s,
+		max-width 0.4s ease;
+}
+
+.card-header {
+	display: flex;
+	align-items: center;
+	gap: $space-sm;
+	flex-wrap: wrap;
+}
+
+.card-title {
+	font-size: $font-md;
+	font-weight: 600;
+	color: $text-primary;
+	margin: 0;
+	white-space: nowrap;
+}
+
+.card-status {
+	padding: 2px 8px;
+	font-size: 0.65rem;
+	font-weight: 600;
+	border-radius: $radius-sm;
+	text-transform: uppercase;
+
+	&.status-live {
+		background: rgba($success, 0.2);
+		color: $success;
+	}
+
+	&.status-beta {
+		background: rgba($accent, 0.2);
+		color: $accent;
+	}
+
+	&.status-wip {
+		background: rgba($warning, 0.2);
+		color: $warning;
+	}
+
+	&.status-coming-soon {
+		background: rgba($text-secondary, 0.2);
+		color: $text-secondary;
+	}
+}
+
+.card-description {
+	font-size: $font-xs;
+	color: $text-secondary;
+	margin: 0;
+	line-height: 1.4;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.card-stack {
+	margin-top: 2px;
+
+	:global(.tech-stack) {
+		gap: 4px;
+	}
+
+	:global(.tech-badge) {
+		font-size: 0.6rem;
+		padding: 2px 6px;
+	}
+}
+
+.card-hint {
+	font-size: $font-xs;
+	color: $accent;
+	font-weight: 500;
+	margin-top: $space-xs;
+}
+
+// Item name (visible when not expanded)
+.item-name {
+	position: absolute;
+	bottom: -22px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: $font-xs;
+	color: $text-secondary;
+	text-align: center;
+	white-space: nowrap;
+	max-width: 90px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: opacity 0.2s ease;
+}
+
+// Status badge on circle (visible when not expanded)
+.item-status {
+	position: absolute;
+	top: -8px;
+	right: -8px;
+	padding: 2px 6px;
+	font-size: 0.55rem;
+	font-weight: 600;
+	border-radius: $radius-sm;
+	text-transform: uppercase;
+
+	&.status-live {
+		background: rgba($success, 0.9);
+		color: white;
+	}
+
+	&.status-beta {
+		background: rgba($accent, 0.9);
+		color: white;
+	}
+
+	&.status-wip {
+		background: rgba($warning, 0.9);
+		color: black;
+	}
+
+	&.status-coming-soon {
+		background: rgba($text-secondary, 0.9);
+		color: white;
+	}
+}
+
+// Admin actions
+.circle-admin-actions {
+	display: flex;
+	gap: $space-sm;
+}
+
+.admin-btn {
+	padding: $space-xs $space-md;
+	border: none;
+	border-radius: $radius-sm;
+	cursor: pointer;
+	font-size: $font-sm;
+	transition: all $transition-fast;
+
+	&.edit {
+		background: $accent;
+		color: white;
+
+		&:hover {
+			background: $accent-hover;
+		}
+	}
+
+	&.delete {
+		background: transparent;
+		border: 1px solid $error;
+		color: $error;
+
+		&:hover {
+			background: rgba($error, 0.1);
+		}
+	}
+}
+
+// Responsive - hide on mobile
+@media (max-width: $breakpoint-md) {
+	.circle-container {
+		display: none;
+	}
+}
