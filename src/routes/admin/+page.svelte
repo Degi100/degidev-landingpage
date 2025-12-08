@@ -8,7 +8,10 @@
 	let nameInput = $state('');
 	let descriptionInput = $state('');
 	let iconInput = $state('');
+	let repoUrlInput = $state('');
+	let stackInput = $state('');
 	let loading = $state(false);
+	let loadingRepo = $state(false);
 
 	let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -44,11 +47,49 @@
 		loading = false;
 	}
 
+	let repoDebounceTimer: ReturnType<typeof setTimeout>;
+
+	function handleRepoUrlInput() {
+		clearTimeout(repoDebounceTimer);
+		// Check if URL looks like GitHub or Forgejo repo
+		if (repoUrlInput.match(/^https?:\/\/.+\/.+\/.+/)) {
+			repoDebounceTimer = setTimeout(fetchRepoLanguages, 500);
+		}
+	}
+
+	async function fetchRepoLanguages() {
+		if (!repoUrlInput || loadingRepo) return;
+
+		loadingRepo = true;
+		try {
+			const res = await fetch('/api/fetch-languages', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ repoUrl: repoUrlInput })
+			});
+
+			if (res.ok) {
+				const data = await res.json();
+				if (data.languages && data.languages.length > 0) {
+					// Append to existing stack if any
+					const existing = stackInput ? stackInput.split(',').map(s => s.trim()) : [];
+					const combined = [...new Set([...existing, ...data.languages])];
+					stackInput = combined.join(', ');
+				}
+			}
+		} catch (e) {
+			// Ignore errors
+		}
+		loadingRepo = false;
+	}
+
 	function resetForm() {
 		urlInput = '';
 		nameInput = '';
 		descriptionInput = '';
 		iconInput = '';
+		repoUrlInput = '';
+		stackInput = '';
 	}
 </script>
 
@@ -105,6 +146,19 @@
 					<div class="field full">
 						<label for="icon">Icon URL (optional)</label>
 						<input type="url" id="icon" name="icon" placeholder="https://..." bind:value={iconInput} />
+					</div>
+					<div class="field full">
+						<label for="repoUrl">Repository URL (optional - fuer Auto-Stack)</label>
+						<div class="url-field">
+							<input type="url" id="repoUrl" name="repoUrl" placeholder="https://github.com/user/repo" bind:value={repoUrlInput} oninput={handleRepoUrlInput} />
+							{#if loadingRepo}
+								<span class="loading-indicator">...</span>
+							{/if}
+						</div>
+					</div>
+					<div class="field full">
+						<label for="stack">Tech Stack (komma-separiert)</label>
+						<input type="text" id="stack" name="stack" placeholder="SvelteKit, Bun, MongoDB" bind:value={stackInput} />
 					</div>
 				</div>
 				<button type="submit" class="primary">Projekt hinzufuegen</button>

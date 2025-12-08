@@ -19,6 +19,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			url: p.url,
 			description: p.description,
 			icon: p.icon || null,
+			repoUrl: p.repoUrl || null,
+			stack: p.stack || [],
 			order: p.order
 		}))
 	};
@@ -35,10 +37,17 @@ export const actions: Actions = {
 		const url = formData.get('url') as string;
 		const description = formData.get('description') as string;
 		const icon = formData.get('icon') as string;
+		const repoUrl = formData.get('repoUrl') as string;
+		const stack = formData.get('stack') as string;
 
 		if (!name || !url || !description) {
 			return fail(400, { error: 'Alle Felder erforderlich' });
 		}
+
+		// Parse stack into array
+		const stackArray = stack
+			? stack.split(',').map(s => s.trim()).filter(s => s.length > 0)
+			: [];
 
 		const count = await collections.projects.countDocuments();
 
@@ -47,6 +56,8 @@ export const actions: Actions = {
 			url,
 			description,
 			icon: icon || null,
+			repoUrl: repoUrl || null,
+			stack: stackArray,
 			order: count
 		});
 

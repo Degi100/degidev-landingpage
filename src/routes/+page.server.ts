@@ -11,6 +11,7 @@ export const load: PageServerLoad = async () => {
 			url: p.url,
 			description: p.description,
 			icon: p.icon || null,
+			stack: p.stack || [],
 			order: p.order
 		}))
 	};
