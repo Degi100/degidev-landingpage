@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { hash } from '@node-rs/argon2';
+import { generateIdFromEntropySize } from 'lucia';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017';
 const DB_NAME = 'degidev';
@@ -34,7 +35,11 @@ async function setupAdmin() {
 			parallelism: 1
 		});
 
+		// Generate string ID for Lucia compatibility
+		const userId = generateIdFromEntropySize(10);
+
 		await users.insertOne({
+			_id: userId as any,
 			username: username.toLowerCase(),
 			password_hash: passwordHash
 		});
