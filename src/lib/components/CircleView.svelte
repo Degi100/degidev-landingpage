@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { type Project, statusConfig } from '$lib/types';
 	import { techNameToItem, getDeviconClass, CATEGORY_COLORS } from '$lib/tech-utils';
+	import { browser } from '$app/environment';
 
 	let {
 		projects,
@@ -22,14 +23,50 @@
 
 	let hoveredId = $state<string | null>(null);
 	let expandedStackId = $state<string | null>(null);
+	let isTouchDevice = $state(false);
+
+	// Detect touch device
+	$effect(() => {
+		if (browser) {
+			isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+		}
+	});
 
 	function handleMouseEnter(id: string) {
-		hoveredId = id;
+		if (!isTouchDevice) {
+			hoveredId = id;
+		}
 	}
 
 	function handleMouseLeave() {
-		hoveredId = null;
-		expandedStackId = null; // Reset stack expansion when leaving
+		if (!isTouchDevice) {
+			hoveredId = null;
+			expandedStackId = null;
+		}
+	}
+
+	function handleTap(id: string, event: MouseEvent | TouchEvent) {
+		if (isTouchDevice) {
+			event.preventDefault();
+			// Toggle: if already expanded, close it; otherwise expand
+			if (hoveredId === id) {
+				hoveredId = null;
+				expandedStackId = null;
+			} else {
+				hoveredId = id;
+			}
+		}
+	}
+
+	function handleOutsideTap(event: MouseEvent | TouchEvent) {
+		if (isTouchDevice) {
+			const target = event.target as HTMLElement;
+			// Close if tapping outside a circle-item
+			if (!target.closest('.circle-item')) {
+				hoveredId = null;
+				expandedStackId = null;
+			}
+		}
 	}
 
 	function toggleStackExpansion(id: string, event: MouseEvent) {
@@ -49,7 +86,8 @@
 
 </script>
 
-<div class="circle-container">
+<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+<div class="circle-container" onclick={handleOutsideTap}>
 	<!-- Top controls -->
 	<div class="circle-controls">
 		<button class="view-toggle" onclick={onToggleView} title="Zur Grid-Ansicht">
@@ -106,7 +144,7 @@
 			{@const isHovered = hoveredId === project._id}
 			{@const delay = index * 0.08}
 			<a
-				href={project.url}
+				href={isHovered || !isTouchDevice ? project.url : undefined}
 				target="_blank"
 				rel="noopener noreferrer"
 				class="circle-item animate-in"
@@ -116,6 +154,7 @@
 				data-project={project._id}
 				onmouseenter={() => handleMouseEnter(project._id)}
 				onmouseleave={handleMouseLeave}
+				onclick={(e) => handleTap(project._id, e)}
 			>
 				<div class="item-card">
 					<!-- Icon/Avatar always visible -->
