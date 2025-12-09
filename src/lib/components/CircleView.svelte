@@ -22,8 +22,14 @@
 	} = $props();
 
 	let hoveredId = $state<string | null>(null);
+	let selectedId = $state<string | null>(null); // For touch: which project is selected (shows bottom sheet)
 	let expandedStackId = $state<string | null>(null);
 	let isTouchDevice = $state(false);
+
+	// Get selected project for bottom sheet
+	const selectedProject = $derived(
+		selectedId ? projects.find(p => p._id === selectedId) : null
+	);
 
 	// Detect touch device
 	$effect(() => {
@@ -45,27 +51,34 @@
 		}
 	}
 
-	function handleTap(id: string, url: string | undefined, event: MouseEvent | TouchEvent) {
+	function handleTap(id: string, event: MouseEvent | TouchEvent) {
 		if (isTouchDevice) {
-			// If already expanded, open the link
-			if (hoveredId === id && url) {
-				window.open(url, '_blank');
-				return;
-			}
-			// Otherwise expand the card
 			event.preventDefault();
-			hoveredId = id;
+			// Toggle selection - if same project, deselect; otherwise select new
+			selectedId = selectedId === id ? null : id;
+			expandedStackId = null;
 		}
 	}
 
 	function handleOutsideTap(event: MouseEvent | TouchEvent) {
 		if (isTouchDevice) {
 			const target = event.target as HTMLElement;
-			// Close if tapping outside a circle-item
-			if (!target.closest('.circle-item')) {
-				hoveredId = null;
+			// Close if tapping outside a circle-item and bottom-sheet
+			if (!target.closest('.circle-item') && !target.closest('.bottom-sheet')) {
+				selectedId = null;
 				expandedStackId = null;
 			}
+		}
+	}
+
+	function closeBottomSheet() {
+		selectedId = null;
+		expandedStackId = null;
+	}
+
+	function openProjectLink(url: string | undefined) {
+		if (url) {
+			window.open(url, '_blank');
 		}
 	}
 
@@ -142,19 +155,21 @@
 			{@const pos = getPosition(index, projects.length)}
 			{@const status = statusConfig[project.status || 'live']}
 			{@const isHovered = hoveredId === project._id}
+			{@const isSelected = selectedId === project._id}
 			{@const delay = index * 0.08}
 			<a
 				href={!isTouchDevice ? project.url : undefined}
 				target="_blank"
 				rel="noopener noreferrer"
 				class="circle-item animate-in"
-				class:expanded={isHovered}
+				class:expanded={isHovered && !isTouchDevice}
+				class:selected={isSelected && isTouchDevice}
 				class:coming-soon={project.status === 'coming_soon'}
 				style="left: {pos.x}%; top: {pos.y}%; --delay: {delay}s;"
 				data-project={project._id}
 				onmouseenter={() => handleMouseEnter(project._id)}
 				onmouseleave={handleMouseLeave}
-				onclick={(e) => handleTap(project._id, project.url, e)}
+				onclick={(e) => handleTap(project._id, e)}
 			>
 				<div class="item-card">
 					<!-- Icon/Avatar always visible -->
@@ -214,8 +229,8 @@
 		{/each}
 	</div>
 
-	<!-- Admin actions for hovered project -->
-	{#if isAdmin && hoveredId}
+	<!-- Admin actions for hovered project (desktop only) -->
+	{#if isAdmin && hoveredId && !isTouchDevice}
 		{@const hoveredProject = projects.find(p => p._id === hoveredId)}
 		{#if hoveredProject}
 			<div class="circle-admin-actions">
@@ -233,5 +248,56 @@
 				</button>
 			</div>
 		{/if}
+	{/if}
+
+	<!-- Bottom Sheet for touch devices -->
+	{#if isTouchDevice && selectedProject}
+		{@const status = statusConfig[selectedProject.status || 'live']}
+		<div class="bottom-sheet" class:open={selectedProject}>
+			<div class="sheet-handle" onclick={closeBottomSheet}></div>
+			<div class="sheet-content">
+				<div class="sheet-header">
+					<div class="sheet-icon-wrap">
+						{#if selectedProject.icon}
+							<img src={selectedProject.icon} alt={selectedProject.name} class="sheet-icon" />
+						{:else}
+							<span class="sheet-fallback">{selectedProject.name.charAt(0)}</span>
+						{/if}
+					</div>
+					<div class="sheet-title-wrap">
+						<h3 class="sheet-title">{selectedProject.name}</h3>
+						<span class="sheet-status {status.class}">{status.label}</span>
+					</div>
+					<button class="sheet-close" onclick={closeBottomSheet}>×</button>
+				</div>
+				<p class="sheet-description">{selectedProject.description}</p>
+				{#if selectedProject.stack && selectedProject.stack.length > 0}
+					<div class="sheet-stack">
+						{#each selectedProject.stack as techName}
+							{@const tech = techNameToItem(techName)}
+							<span class="mini-badge" style="--cat-color: {CATEGORY_COLORS[tech.category]}">
+								<i class={getDeviconClass(tech.icon)}></i>
+								{tech.name}
+							</span>
+						{/each}
+					</div>
+				{/if}
+				<div class="sheet-actions">
+					{#if selectedProject.url}
+						<button class="sheet-btn primary" onclick={() => openProjectLink(selectedProject.url)}>
+							Projekt öffnen →
+						</button>
+					{/if}
+					{#if isAdmin}
+						<button class="sheet-btn edit" onclick={(e) => { onEdit?.(selectedProject, e); closeBottomSheet(); }}>
+							Bearbeiten
+						</button>
+						<button class="sheet-btn delete" onclick={(e) => { onDeleteConfirm?.(selectedProject._id, e); closeBottomSheet(); }}>
+							Löschen
+						</button>
+					{/if}
+				</div>
+			</div>
+		</div>
 	{/if}
 </div>

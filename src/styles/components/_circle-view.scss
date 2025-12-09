@@ -556,6 +556,182 @@
 	}
 }
 
+// Selected state for touch devices (glow effect)
+.circle-item.selected {
+	.item-card {
+		box-shadow: 0 0 20px rgba($accent, 0.6), 0 0 40px rgba($accent, 0.3);
+		border-color: $accent;
+	}
+}
+
+// Bottom Sheet for touch devices
+.bottom-sheet {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: $bg-secondary;
+	border-radius: $radius-lg $radius-lg 0 0;
+	box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+	z-index: 100;
+	transform: translateY(0);
+	animation: slideUp 0.3s ease-out;
+	max-height: 70vh;
+	overflow-y: auto;
+}
+
+@keyframes slideUp {
+	from {
+		transform: translateY(100%);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+
+.sheet-handle {
+	width: 40px;
+	height: 4px;
+	background: $border;
+	border-radius: 2px;
+	margin: $space-sm auto;
+	cursor: pointer;
+}
+
+.sheet-content {
+	padding: 0 $space-lg $space-lg;
+}
+
+.sheet-header {
+	display: flex;
+	align-items: center;
+	gap: $space-md;
+	margin-bottom: $space-md;
+}
+
+.sheet-icon-wrap {
+	width: 56px;
+	height: 56px;
+	min-width: 56px;
+	border-radius: $radius-md;
+	overflow: hidden;
+	background: $bg-primary;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sheet-icon {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.sheet-fallback {
+	font-size: $font-xl;
+	font-weight: 700;
+	color: $accent;
+}
+
+.sheet-title-wrap {
+	flex: 1;
+	min-width: 0;
+}
+
+.sheet-title {
+	font-size: $font-lg;
+	font-weight: 600;
+	color: $text-primary;
+	margin: 0 0 $space-xs;
+}
+
+.sheet-status {
+	font-size: $font-xs;
+	padding: 2px 8px;
+	border-radius: $radius-sm;
+	font-weight: 500;
+}
+
+.sheet-close {
+	width: 32px;
+	height: 32px;
+	border: none;
+	background: $bg-primary;
+	color: $text-secondary;
+	border-radius: 50%;
+	font-size: $font-xl;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all $transition-fast;
+
+	&:hover {
+		background: $border;
+		color: $text-primary;
+	}
+}
+
+.sheet-description {
+	color: $text-secondary;
+	font-size: $font-sm;
+	line-height: 1.5;
+	margin-bottom: $space-md;
+}
+
+.sheet-stack {
+	display: flex;
+	flex-wrap: wrap;
+	gap: $space-xs;
+	margin-bottom: $space-lg;
+}
+
+.sheet-actions {
+	display: flex;
+	flex-direction: column;
+	gap: $space-sm;
+}
+
+.sheet-btn {
+	padding: $space-sm $space-md;
+	border-radius: $radius-md;
+	font-size: $font-sm;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all $transition-fast;
+	border: none;
+	text-align: center;
+
+	&.primary {
+		background: $accent;
+		color: white;
+
+		&:hover {
+			background: $accent-hover;
+		}
+	}
+
+	&.edit {
+		background: transparent;
+		border: 1px solid $accent;
+		color: $accent;
+
+		&:hover {
+			background: rgba($accent, 0.1);
+		}
+	}
+
+	&.delete {
+		background: transparent;
+		border: 1px solid $error;
+		color: $error;
+
+		&:hover {
+			background: rgba($error, 0.1);
+		}
+	}
+}
+
 // Responsive adjustments
 @media (max-width: $breakpoint-lg) {
 	.circle-wrapper {
