@@ -10,7 +10,7 @@ const adapter = new MongodbAdapter(
 export const lucia = new Lucia(adapter, {
 	sessionCookie: {
 		attributes: {
-			secure: process.env.NODE_ENV === 'production'
+			secure: true
 		}
 	},
 	getUserAttributes: (attributes) => {
