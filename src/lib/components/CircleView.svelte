@@ -123,7 +123,7 @@
 		{#each projects as project, index}
 			{@const pos = getPosition(index, projects.length)}
 			{@const delay = index * 0.08}
-			{@const isActive = hoveredId === project._id}
+			{@const isActive = hoveredId === project._id || selectedId === project._id}
 			<svg
 				class="connection-line-svg"
 				class:active={isActive}
