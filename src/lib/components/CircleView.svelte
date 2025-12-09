@@ -60,7 +60,7 @@
 			<div class="circle-admin-top">
 				<span class="admin-user">{username}</span>
 				<button class="admin-add-btn" onclick={onAddProject}>+ Projekt</button>
-				<form method="POST" action="/logout">
+				<form method="POST" action="/admin?/logout">
 					<button type="submit" class="admin-logout-btn">Logout</button>
 				</form>
 			</div>
