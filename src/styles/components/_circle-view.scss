@@ -64,8 +64,9 @@
 
 .circle-wrapper {
 	position: relative;
-	width: min(650px, 90vw);
-	height: min(650px, 90vw);
+	// Use smaller of width/height for landscape support
+	width: min(650px, 90vw, 80vh);
+	height: min(650px, 90vw, 80vh);
 }
 
 // Connection lines - individual SVG per project
@@ -557,8 +558,8 @@
 // Responsive adjustments
 @media (max-width: $breakpoint-lg) {
 	.circle-wrapper {
-		width: min(550px, 85vw);
-		height: min(550px, 85vw);
+		width: min(550px, 85vw, 75vh);
+		height: min(550px, 85vw, 75vh);
 	}
 
 	.circle-controls {
@@ -609,8 +610,8 @@
 
 @media (max-width: $breakpoint-md) {
 	.circle-wrapper {
-		width: min(420px, 90vw);
-		height: min(420px, 90vw);
+		width: min(420px, 90vw, 70vh);
+		height: min(420px, 90vw, 70vh);
 	}
 
 	.circle-controls {
@@ -706,8 +707,8 @@
 
 @media (max-width: $breakpoint-sm) {
 	.circle-wrapper {
-		width: min(320px, 92vw);
-		height: min(320px, 92vw);
+		width: min(320px, 92vw, 65vh);
+		height: min(320px, 92vw, 65vh);
 	}
 
 	.circle-controls {

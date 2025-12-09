@@ -45,16 +45,16 @@
 		}
 	}
 
-	function handleTap(id: string, event: MouseEvent | TouchEvent) {
+	function handleTap(id: string, url: string | undefined, event: MouseEvent | TouchEvent) {
 		if (isTouchDevice) {
-			event.preventDefault();
-			// Toggle: if already expanded, close it; otherwise expand
-			if (hoveredId === id) {
-				hoveredId = null;
-				expandedStackId = null;
-			} else {
-				hoveredId = id;
+			// If already expanded, open the link
+			if (hoveredId === id && url) {
+				window.open(url, '_blank');
+				return;
 			}
+			// Otherwise expand the card
+			event.preventDefault();
+			hoveredId = id;
 		}
 	}
 
@@ -154,7 +154,7 @@
 				data-project={project._id}
 				onmouseenter={() => handleMouseEnter(project._id)}
 				onmouseleave={handleMouseLeave}
-				onclick={(e) => handleTap(project._id, e)}
+				onclick={(e) => handleTap(project._id, project.url, e)}
 			>
 				<div class="item-card">
 					<!-- Icon/Avatar always visible -->
