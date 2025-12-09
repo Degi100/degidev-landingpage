@@ -144,7 +144,7 @@
 			{@const isHovered = hoveredId === project._id}
 			{@const delay = index * 0.08}
 			<a
-				href={isHovered || !isTouchDevice ? project.url : undefined}
+				href={!isTouchDevice ? project.url : undefined}
 				target="_blank"
 				rel="noopener noreferrer"
 				class="circle-item animate-in"

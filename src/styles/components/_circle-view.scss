@@ -8,6 +8,7 @@
 	gap: $space-md;
 	padding: $space-md 0;
 	min-height: 100vh;
+	overflow-x: clip; // Prevent horizontal scroll but allow visible overflow for cards
 }
 
 // Top controls bar
