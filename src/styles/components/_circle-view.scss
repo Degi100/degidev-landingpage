@@ -68,6 +68,95 @@
 	height: min(650px, 90vw);
 }
 
+// Connection lines - individual SVG per project
+.connection-line-svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+	pointer-events: none;
+
+	.connection-line {
+		stroke: $border;
+		stroke-width: 0.3;
+		stroke-dasharray: 100;
+		stroke-dashoffset: 0;
+		opacity: 0.1;
+		filter: drop-shadow(0 0 0px transparent);
+		animation:
+			drawLine 0.6s ease-out var(--delay, 0s) forwards,
+			knightRider 2s ease-in-out calc(var(--delay, 0s) + 0.6s) forwards;
+		// Smooth fade-out when hover ends
+		transition:
+			stroke 0.6s ease-out,
+			stroke-width 0.6s ease-out,
+			opacity 0.6s ease-out,
+			filter 0.6s ease-out;
+	}
+
+	// When SVG has .active class, show static glow
+	// Use !important to override animation fill values
+	&.active .connection-line {
+		stroke: $accent !important;
+		stroke-width: 1.5 !important;
+		opacity: 0.8 !important;
+		filter: drop-shadow(0 0 6px $accent) !important;
+	}
+}
+
+@keyframes drawLine {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+@keyframes knightRider {
+	0% {
+		stroke: $accent;
+		stroke-width: 0.5;
+		opacity: 0.15;
+		filter: drop-shadow(0 0 0px $accent);
+	}
+	50% {
+		stroke: $accent;
+		stroke-width: 1.5;
+		opacity: 0.8;
+		filter: drop-shadow(0 0 4px $accent);
+	}
+	100% {
+		stroke: $border;
+		stroke-width: 0.3;
+		opacity: 0.1;
+		filter: drop-shadow(0 0 0px $accent);
+	}
+}
+
+@keyframes hoverPulse {
+	0% {
+		stroke: $accent;
+		stroke-width: 0.5;
+		stroke-dashoffset: 0;
+		opacity: 0.3;
+		filter: drop-shadow(0 0 2px $accent);
+	}
+	50% {
+		stroke: $accent;
+		stroke-width: 2;
+		stroke-dashoffset: 0;
+		opacity: 1;
+		filter: drop-shadow(0 0 8px $accent) drop-shadow(0 0 12px $accent);
+	}
+	100% {
+		stroke: $accent;
+		stroke-width: 1;
+		stroke-dashoffset: 0;
+		opacity: 0.8;
+		filter: drop-shadow(0 0 4px $accent);
+	}
+}
+
 // Center branding
 .center-brand {
 	position: absolute;
@@ -77,7 +166,6 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: $space-xs;
 	z-index: 0;
 }
 
@@ -96,18 +184,32 @@
 		0 0 40px rgba($accent, 0.3),
 		inset 0 -3px 10px rgba(0, 0, 0, 0.2);
 	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	line-height: 1;
+	padding-left: 2px; // Optical adjustment for "D" character
+	padding-bottom: 4px; // Move "D" slightly up
+}
+
+.brand-text {
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: $space-sm;
 }
 
 .brand-name {
 	font-size: $font-lg;
 	font-weight: 700;
 	color: $text-primary;
-	margin-top: $space-sm;
 }
 
 .brand-tagline {
 	font-size: $font-xs;
 	color: $text-secondary;
+	margin-top: $space-xs;
 }
 
 // Individual project items
@@ -117,17 +219,43 @@
 	text-decoration: none;
 	z-index: 1;
 
-	// Prevent flickering during transition
-	will-change: z-index;
+	// Larger hover area to prevent flicker - invisible padding
+	&::before {
+		content: '';
+		position: absolute;
+		top: -20px;
+		left: -20px;
+		right: -20px;
+		bottom: -20px;
+	}
 
-	&:hover,
+	// Keep expanded cards below other circles
 	&.expanded {
-		z-index: 100;
+		z-index: 0;
 	}
 
 	&.coming-soon {
 		opacity: 0.5;
 		pointer-events: none;
+	}
+
+	// Entry animation
+	&.animate-in {
+		animation: spinIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) var(--delay, 0s) both;
+	}
+
+}
+
+@keyframes spinIn {
+	0% {
+		opacity: 0;
+		scale: 0;
+		rotate: -180deg;
+	}
+	100% {
+		opacity: 1;
+		scale: 1;
+		rotate: 0deg;
 	}
 }
 
@@ -144,15 +272,17 @@
 	height: 70px;
 	overflow: hidden;
 	transition:
-		width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-		height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-		border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-		border-color 0.3s ease,
-		box-shadow 0.3s ease,
-		gap 0.3s ease;
+		width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+		height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+		border-radius 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+		border-color 0.4s ease,
+		box-shadow 0.4s ease,
+		gap 0.4s ease;
 
 	.circle-item.expanded & {
-		width: 320px;
+		width: auto;
+		min-width: 280px;
+		max-width: 400px;
 		height: auto;
 		min-height: 140px;
 		border-radius: $radius-lg;
@@ -217,16 +347,16 @@
 	max-width: 0;
 	overflow: hidden;
 	transition:
-		opacity 0.2s ease,
-		max-width 0.4s ease;
+		opacity 0.3s ease,
+		max-width 0.5s ease;
 }
 
 .circle-item.expanded .card-content {
 	opacity: 1;
-	max-width: 240px;
+	max-width: none;
 	transition:
-		opacity 0.3s ease 0.15s,
-		max-width 0.4s ease;
+		opacity 0.4s ease 0.2s,
+		max-width 0.5s ease;
 }
 
 .card-header {
@@ -284,15 +414,54 @@
 }
 
 .card-stack {
-	margin-top: 2px;
+	margin-top: 4px;
+}
 
-	:global(.tech-stack) {
-		gap: 4px;
+.stack-badges {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 4px;
+	align-items: center;
+
+	.stack-expanded & {
+		flex-wrap: wrap;
 	}
+}
 
-	:global(.tech-badge) {
-		font-size: 0.6rem;
-		padding: 2px 6px;
+.mini-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	padding: 2px 6px;
+	font-size: 0.55rem;
+	background: $bg-secondary;
+	border: 1px solid $border;
+	border-radius: 4px;
+	color: $text-secondary;
+	white-space: nowrap;
+
+	i {
+		font-size: 0.65rem;
+		color: var(--cat-color);
+	}
+}
+
+.stack-toggle {
+	position: relative;
+	z-index: 10;
+	background: rgba($accent, 0.15);
+	border: 1px solid rgba($accent, 0.3);
+	border-radius: $radius-sm;
+	color: $accent;
+	font-size: 0.6rem;
+	padding: 2px 8px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+
+	&:hover {
+		background: rgba($accent, 0.25);
+		border-color: $accent;
 	}
 }
 
