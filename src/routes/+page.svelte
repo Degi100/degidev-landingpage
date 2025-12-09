@@ -19,9 +19,8 @@
 
 	let currentSort = $state<SortOption>('live');
 	let viewMode = $state<'grid' | 'circle'>('grid');
-	let isMobile = $state(false);
 
-	// Load preferences and check screen size after mount
+	// Load preferences after mount
 	$effect(() => {
 		if (browser) {
 			// Load sort preference
@@ -35,15 +34,6 @@
 			if (savedView === 'grid' || savedView === 'circle') {
 				viewMode = savedView;
 			}
-
-			// Check if mobile
-			const checkMobile = () => {
-				isMobile = window.innerWidth <= 768;
-			};
-			checkMobile();
-			window.addEventListener('resize', checkMobile);
-
-			return () => window.removeEventListener('resize', checkMobile);
 		}
 	});
 
@@ -61,8 +51,8 @@
 		}
 	}
 
-	// Effective view mode (force grid on mobile)
-	const effectiveViewMode = $derived(isMobile ? 'grid' : viewMode);
+	// Effective view mode (now supports circle on mobile too)
+	const effectiveViewMode = $derived(viewMode);
 
 	// Sorted projects - gewaehlter Status zuerst, dann die anderen nach Prioritaet
 	const sortedProjects = $derived.by(() => {
@@ -160,12 +150,10 @@
 
 		<section class="projects">
 			<div class="projects-header">
-				{#if !isMobile}
-					<button class="view-toggle" onclick={toggleViewMode} title="Ansicht wechseln">
-						<span class="view-icon">◯</span>
-						<span class="view-label">Circle</span>
-					</button>
-				{/if}
+				<button class="view-toggle" onclick={toggleViewMode} title="Ansicht wechseln">
+					<span class="view-icon">◯</span>
+					<span class="view-label">Circle</span>
+				</button>
 				<SortControls {currentSort} onSortChange={handleSortChange} />
 			</div>
 			{#if sortedProjects.length === 0}

@@ -554,9 +554,237 @@
 	}
 }
 
-// Responsive - hide on mobile
+// Responsive adjustments
+@media (max-width: $breakpoint-lg) {
+	.circle-wrapper {
+		width: min(550px, 85vw);
+		height: min(550px, 85vw);
+	}
+
+	.circle-controls {
+		max-width: min(550px, 85vw);
+	}
+
+	.brand-logo {
+		width: 80px;
+		height: 80px;
+		font-size: 2.5rem;
+	}
+
+	.item-card {
+		width: 60px;
+		height: 60px;
+		padding: $space-xs;
+
+		.circle-item.expanded & {
+			min-width: 240px;
+			max-width: 340px;
+			min-height: 120px;
+			padding: $space-sm;
+		}
+	}
+
+	.card-icon-wrap {
+		width: 42px;
+		height: 42px;
+		min-width: 42px;
+
+		.circle-item.expanded & {
+			width: 50px;
+			height: 50px;
+			min-width: 50px;
+		}
+	}
+
+	.circle-item .card-icon {
+		width: 30px;
+		height: 30px;
+	}
+
+	.circle-item.expanded .card-icon {
+		width: 36px;
+		height: 36px;
+	}
+}
+
 @media (max-width: $breakpoint-md) {
-	.circle-container {
+	.circle-wrapper {
+		width: min(420px, 90vw);
+		height: min(420px, 90vw);
+	}
+
+	.circle-controls {
+		max-width: min(420px, 90vw);
+		flex-wrap: wrap;
+		gap: $space-sm;
+	}
+
+	.brand-logo {
+		width: 60px;
+		height: 60px;
+		font-size: 2rem;
+	}
+
+	.brand-name {
+		font-size: $font-base;
+	}
+
+	.brand-tagline {
+		font-size: 0.6rem;
+	}
+
+	.item-card {
+		width: 50px;
+		height: 50px;
+
+		.circle-item.expanded & {
+			min-width: 200px;
+			max-width: 280px;
+			min-height: 100px;
+			gap: $space-sm;
+		}
+	}
+
+	.card-icon-wrap {
+		width: 36px;
+		height: 36px;
+		min-width: 36px;
+
+		.circle-item.expanded & {
+			width: 44px;
+			height: 44px;
+			min-width: 44px;
+		}
+	}
+
+	.circle-item .card-icon {
+		width: 26px;
+		height: 26px;
+	}
+
+	.circle-item.expanded .card-icon {
+		width: 32px;
+		height: 32px;
+	}
+
+	.card-title {
+		font-size: $font-sm;
+	}
+
+	.card-description {
+		font-size: 0.65rem;
+		-webkit-line-clamp: 2;
+	}
+
+	.card-status {
+		font-size: 0.55rem;
+		padding: 1px 5px;
+	}
+
+	.mini-badge {
+		font-size: 0.5rem;
+		padding: 1px 4px;
+
+		i {
+			font-size: 0.55rem;
+		}
+	}
+
+	.item-name {
+		font-size: 0.6rem;
+		max-width: 70px;
+		bottom: -18px;
+	}
+
+	.item-status {
+		font-size: 0.45rem;
+		padding: 1px 4px;
+		top: -6px;
+		right: -6px;
+	}
+}
+
+@media (max-width: $breakpoint-sm) {
+	.circle-wrapper {
+		width: min(320px, 92vw);
+		height: min(320px, 92vw);
+	}
+
+	.circle-controls {
+		max-width: min(320px, 92vw);
+	}
+
+	.brand-logo {
+		width: 50px;
+		height: 50px;
+		font-size: 1.6rem;
+	}
+
+	.brand-name {
+		font-size: $font-sm;
+	}
+
+	.brand-tagline {
+		font-size: 0.5rem;
+	}
+
+	.item-card {
+		width: 42px;
+		height: 42px;
+		padding: 3px;
+
+		.circle-item.expanded & {
+			min-width: 180px;
+			max-width: 240px;
+			min-height: 90px;
+		}
+	}
+
+	.card-icon-wrap {
+		width: 32px;
+		height: 32px;
+		min-width: 32px;
+
+		.circle-item.expanded & {
+			width: 38px;
+			height: 38px;
+			min-width: 38px;
+		}
+	}
+
+	.circle-item .card-icon {
+		width: 22px;
+		height: 22px;
+	}
+
+	.circle-item.expanded .card-icon {
+		width: 28px;
+		height: 28px;
+	}
+
+	.card-title {
+		font-size: 0.7rem;
+	}
+
+	.card-description {
+		font-size: 0.6rem;
+	}
+
+	.card-hint {
+		font-size: 0.6rem;
+	}
+
+	.item-name {
+		font-size: 0.5rem;
+		max-width: 55px;
+		bottom: -15px;
+	}
+
+	.item-status {
+		display: none;
+	}
+
+	.card-stack {
 		display: none;
 	}
 }
