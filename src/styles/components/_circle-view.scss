@@ -590,11 +590,14 @@
 }
 
 .sheet-handle {
+	display: block;
 	width: 40px;
 	height: 4px;
 	background: $border;
+	border: none;
 	border-radius: 2px;
 	margin: $space-sm auto;
+	padding: 0;
 	cursor: pointer;
 }
 

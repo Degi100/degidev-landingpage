@@ -186,3 +186,7 @@
 		onSuccess={() => {}}
 	/>
 {/if}
+
+<footer class="site-footer">
+	<a href="/impressum">Impressum</a>
+</footer>

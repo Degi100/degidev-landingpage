@@ -254,7 +254,7 @@
 	{#if isTouchDevice && selectedProject}
 		{@const status = statusConfig[selectedProject.status || 'live']}
 		<div class="bottom-sheet" class:open={selectedProject}>
-			<div class="sheet-handle" onclick={closeBottomSheet}></div>
+			<button class="sheet-handle" onclick={closeBottomSheet} aria-label="Schliessen"></button>
 			<div class="sheet-content">
 				<div class="sheet-header">
 					<div class="sheet-icon-wrap">

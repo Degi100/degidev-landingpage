@@ -40,3 +40,20 @@
 		gap: $space-lg;
 	}
 }
+
+.site-footer {
+	text-align: center;
+	padding: $space-lg;
+	margin-top: $space-xl;
+
+	a {
+		color: $text-secondary;
+		font-size: $font-sm;
+		text-decoration: none;
+		transition: color $transition-fast;
+
+		&:hover {
+			color: $accent;
+		}
+	}
+}
