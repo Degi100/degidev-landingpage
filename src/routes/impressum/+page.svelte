@@ -18,7 +18,7 @@
 	<section>
 		<h2>Kontakt</h2>
 		<p>
-			E-Mail: <a href="mailto:r.degering@mail.de">r.degering@mail.de</a>
+			E-Mail: <a href="mailto:info@degidev..de">info@degidev.de</a>
 		</p>
 	</section>
 
