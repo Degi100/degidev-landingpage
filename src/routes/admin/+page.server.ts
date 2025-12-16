@@ -121,7 +121,8 @@ export const actions: Actions = {
 		}
 
 		try {
-			const user = await collections.users.findOne({ _id: new ObjectId(locals.user.id) });
+			// User ID is a string (from Lucia), not ObjectId
+			const user = await collections.users.findOne({ _id: locals.user.id as any });
 			if (!user) {
 				return fail(400, { passwordError: 'Benutzer nicht gefunden' });
 			}
@@ -131,9 +132,14 @@ export const actions: Actions = {
 				return fail(400, { passwordError: 'Aktuelles Passwort ist falsch' });
 			}
 
-			const newPasswordHash = await hash(newPassword);
+			const newPasswordHash = await hash(newPassword, {
+				memoryCost: 19456,
+				timeCost: 2,
+				outputLen: 32,
+				parallelism: 1
+			});
 			await collections.users.updateOne(
-				{ _id: new ObjectId(locals.user.id) },
+				{ _id: locals.user.id as any },
 				{ $set: { password_hash: newPasswordHash } }
 			);
 
