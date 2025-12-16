@@ -12,6 +12,7 @@
 	let stackInput = $state('');
 	let loading = $state(false);
 	let loadingRepo = $state(false);
+	let showPasswordForm = $state(false);
 
 	let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -115,6 +116,14 @@
 		<p class="success">Aktion erfolgreich!</p>
 	{/if}
 
+	{#if form?.passwordError}
+		<p class="error">{form.passwordError}</p>
+	{/if}
+
+	{#if form?.passwordSuccess}
+		<p class="success">Passwort erfolgreich geaendert!</p>
+	{/if}
+
 	<section class="projects-section">
 		<div class="section-header">
 			<h2>Projekte ({data.projects.length})</h2>
@@ -184,6 +193,35 @@
 				<p class="empty">Noch keine Projekte. Fuege eins hinzu!</p>
 			{/each}
 		</div>
+	</section>
+
+	<section class="settings-section">
+		<div class="section-header">
+			<h2>Einstellungen</h2>
+			<button class="secondary" onclick={() => showPasswordForm = !showPasswordForm}>
+				{showPasswordForm ? 'Abbrechen' : 'Passwort aendern'}
+			</button>
+		</div>
+
+		{#if showPasswordForm}
+			<form method="POST" action="?/changePassword" use:enhance={() => { return async ({ update }) => { await update(); showPasswordForm = false; }; }} class="password-form">
+				<div class="form-grid">
+					<div class="field full">
+						<label for="currentPassword">Aktuelles Passwort</label>
+						<input type="password" id="currentPassword" name="currentPassword" required />
+					</div>
+					<div class="field">
+						<label for="newPassword">Neues Passwort</label>
+						<input type="password" id="newPassword" name="newPassword" minlength="8" required />
+					</div>
+					<div class="field">
+						<label for="confirmPassword">Passwort bestaetigen</label>
+						<input type="password" id="confirmPassword" name="confirmPassword" minlength="8" required />
+					</div>
+				</div>
+				<button type="submit" class="primary">Passwort aendern</button>
+			</form>
+		{/if}
 	</section>
 </main>
 
@@ -373,6 +411,48 @@
 
 			&:hover {
 				background: rgba(248, 113, 113, 0.1);
+			}
+		}
+	}
+
+	.settings-section {
+		margin-top: 3rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--border);
+
+		.section-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 1.5rem;
+
+			h2 {
+				font-size: 1.25rem;
+			}
+		}
+	}
+
+	.password-form {
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 1.5rem;
+
+		.form-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 1rem;
+			margin-bottom: 1.5rem;
+
+			.field.full {
+				grid-column: 1 / -1;
+			}
+
+			label {
+				display: block;
+				margin-bottom: 0.5rem;
+				font-size: 0.875rem;
+				color: var(--text-secondary);
 			}
 		}
 	}

@@ -3,6 +3,7 @@ import { redirect, fail } from '@sveltejs/kit';
 import { collections } from '$lib/server/db';
 import { lucia } from '$lib/server/auth';
 import { ObjectId } from 'mongodb';
+import { verify, hash } from '@node-rs/argon2';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
@@ -95,5 +96,46 @@ export const actions: Actions = {
 		});
 
 		redirect(302, '/');
+	},
+
+	changePassword: async ({ request, locals }) => {
+		if (!locals.user) {
+			return fail(401, { error: 'Nicht autorisiert' });
+		}
+
+		const formData = await request.formData();
+		const currentPassword = formData.get('currentPassword') as string;
+		const newPassword = formData.get('newPassword') as string;
+		const confirmPassword = formData.get('confirmPassword') as string;
+
+		if (!currentPassword || !newPassword || !confirmPassword) {
+			return fail(400, { passwordError: 'Alle Felder erforderlich' });
+		}
+
+		if (newPassword.length < 8) {
+			return fail(400, { passwordError: 'Neues Passwort muss mindestens 8 Zeichen haben' });
+		}
+
+		if (newPassword !== confirmPassword) {
+			return fail(400, { passwordError: 'Passwoerter stimmen nicht ueberein' });
+		}
+
+		const user = await collections.users.findOne({ _id: new ObjectId(locals.user.id) });
+		if (!user) {
+			return fail(400, { passwordError: 'Benutzer nicht gefunden' });
+		}
+
+		const validPassword = await verify(user.password_hash, currentPassword);
+		if (!validPassword) {
+			return fail(400, { passwordError: 'Aktuelles Passwort ist falsch' });
+		}
+
+		const newPasswordHash = await hash(newPassword);
+		await collections.users.updateOne(
+			{ _id: new ObjectId(locals.user.id) },
+			{ $set: { password_hash: newPasswordHash } }
+		);
+
+		return { passwordSuccess: true };
 	}
 };
