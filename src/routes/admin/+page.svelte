@@ -204,7 +204,7 @@
 		</div>
 
 		{#if showPasswordForm}
-			<form method="POST" action="?/changePassword" use:enhance={() => { return async ({ update }) => { await update(); showPasswordForm = false; }; }} class="password-form">
+			<form method="POST" action="?/changePassword" use:enhance={() => { return async ({ result, update }) => { await update(); if (result.type === 'success') showPasswordForm = false; }; }} class="password-form">
 				<div class="form-grid">
 					<div class="field full">
 						<label for="currentPassword">Aktuelles Passwort</label>

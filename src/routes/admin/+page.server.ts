@@ -130,7 +130,12 @@ export const actions: Actions = {
 			return fail(400, { passwordError: 'Aktuelles Passwort ist falsch' });
 		}
 
-		const newPasswordHash = await hash(newPassword);
+		const newPasswordHash = await hash(newPassword, {
+			memoryCost: 19456,
+			timeCost: 2,
+			outputLen: 32,
+			parallelism: 1
+		});
 		await collections.users.updateOne(
 			{ _id: new ObjectId(locals.user.id) },
 			{ $set: { password_hash: newPasswordHash } }
