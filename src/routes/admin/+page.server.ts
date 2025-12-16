@@ -120,27 +120,27 @@ export const actions: Actions = {
 			return fail(400, { passwordError: 'Passwoerter stimmen nicht ueberein' });
 		}
 
-		const user = await collections.users.findOne({ _id: new ObjectId(locals.user.id) });
-		if (!user) {
-			return fail(400, { passwordError: 'Benutzer nicht gefunden' });
+		try {
+			const user = await collections.users.findOne({ _id: new ObjectId(locals.user.id) });
+			if (!user) {
+				return fail(400, { passwordError: 'Benutzer nicht gefunden' });
+			}
+
+			const validPassword = await verify(user.password_hash, currentPassword);
+			if (!validPassword) {
+				return fail(400, { passwordError: 'Aktuelles Passwort ist falsch' });
+			}
+
+			const newPasswordHash = await hash(newPassword);
+			await collections.users.updateOne(
+				{ _id: new ObjectId(locals.user.id) },
+				{ $set: { password_hash: newPasswordHash } }
+			);
+
+			return { passwordSuccess: true };
+		} catch (e) {
+			console.error('Password change error:', e);
+			return fail(500, { passwordError: 'Fehler beim Aendern des Passworts' });
 		}
-
-		const validPassword = await verify(user.password_hash, currentPassword);
-		if (!validPassword) {
-			return fail(400, { passwordError: 'Aktuelles Passwort ist falsch' });
-		}
-
-		const newPasswordHash = await hash(newPassword, {
-			memoryCost: 19456,
-			timeCost: 2,
-			outputLen: 32,
-			parallelism: 1
-		});
-		await collections.users.updateOne(
-			{ _id: new ObjectId(locals.user.id) },
-			{ $set: { password_hash: newPasswordHash } }
-		);
-
-		return { passwordSuccess: true };
 	}
 };
